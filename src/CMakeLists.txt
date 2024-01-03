@@ -13,6 +13,7 @@ target_include_directories(pico_ws2812_pio INTERFACE
 pico_mirrored_target_link_libraries(pico_ws2812_pio INTERFACE
         pico_stdlib
         hardware_pio
+        hardware_irq
         hardware_dma
         pico_async_context_freertos
         )

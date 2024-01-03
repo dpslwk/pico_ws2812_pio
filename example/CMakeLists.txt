@@ -1,4 +1,4 @@
-add_executable(example_test_w2812
+add_executable(${NAME}
     ${NAME}.c
 )
 
@@ -7,7 +7,7 @@ include(${FREERTOS_DIR}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_import.cm
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(${NAME}
     pico_stdlib
-    pico_w2812_pio
+    pico_ws2812_pio
 
     FreeRTOS-Kernel
     FreeRTOS-Kernel-Heap4
@@ -18,7 +18,7 @@ target_include_directories(${NAME} PRIVATE
 )
 
 target_compile_definitions(${NAME} PRIVATE
-    # PICO_MAX_SHARED_IRQ_HANDLERS=8
+    PICO_MAX_SHARED_IRQ_HANDLERS=8
 )
 
 pico_enable_stdio_usb(${NAME} 1)
