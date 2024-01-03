@@ -6,6 +6,8 @@
 
 #ifdef LIB_FREERTOS_KERNEL
 #include "FreeRTOS.h"
+#include "task.h"
+#define WS2821_TRANSFER_TASK_STACK_SIZE (512)
 #define WS2812_CALLOC(xNum, xSize) pvPortCalloc(xNum, xSize)
 #else
 #define WS2812_CALLOC(num, size) calloc(num, size)
@@ -140,14 +142,7 @@ bool ws2812_transfer(ws2812_pio_t *self) {
 }
 
 bool ws2812_show(ws2812_pio_t *self) {
-    return ws2812_show(self, true);
-}
-
-bool ws2812_show(ws2812_pio_t *self, bool transfer) {
     _ws2812_dma_memcpy_buffer(self, self->transmit_buffer, self->draw_buffer, self->buffer_length);
-    if (transfer) {
-        return ws2812_transfer(self);
-    }
 
     return true;
 }
@@ -454,3 +449,41 @@ bool ws2812_get_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint
 
     return true;
 }
+
+
+#ifdef LIB_FREERTOS_KERNEL
+
+static void _ws2812_transfer_task(void *params) {
+    ws2812_pio_t *self = params;
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(self->refresh_rate);
+
+    xLastWakeTime = xTaskGetTickCount();
+    while (true) {
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        ws2812_transfer(self);
+    }
+}
+
+bool ws2812_pio_init_freertos(
+    ws2812_pio_t *self,
+    PIO pio,
+    int sm,
+    int base_pin,
+    uint16_t pixels,
+    uint8_t lanes,
+    uint16_t refresh_rate,
+    uint32_t task_priority
+) {
+    bool ret;
+    ret = ws2812_pio_init(self, pio, sm, base_pin, pixels, lanes);
+    if (ret != true) {
+        return false;
+    }
+
+    self->refresh_rate = refresh_rate;
+
+    xTaskCreate(_ws2812_transfer_task, "WS2812TransferTask", WS2821_TRANSFER_TASK_STACK_SIZE, self, task_priority, &self->_trasnfer_task_handle);
+}
+
+#endif // LIB_FREERTOS_KERNEL
