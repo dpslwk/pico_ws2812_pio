@@ -230,6 +230,18 @@ bool ws2812_clear_all_pixel(ws2812_pio_t *self) {
     return true;
 }
 
+bool ws2812_clear_all_pixel_in_lane(ws2812_pio_t *self, uint8_t lane) {
+    uint16_t pixel;
+    bool res;
+
+    for (pixel = 0; pixel < self->pixels; ++pixel) {
+        res = ws2812_clear_pixel(self, lane, pixel);
+        if (res != true) {
+            return res;
+        }
+    }
+}
+
 bool ws2812_set_all_pixel_color(ws2812_pio_t *self, uint32_t color) {
     uint8_t lane;
     uint16_t pixel;
@@ -448,6 +460,113 @@ bool ws2812_get_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint
     *blueP = blue;
 
     return true;
+}
+
+uint32_t ws2812_brightness_percent_color(uint32_t color, uint8_t percent) {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+
+    red = (color >> 16) & 0xff;
+    green = (color >> 8) & 0xff;
+    blue = color & 0xff;
+
+    red = ((uint32_t) red * percent) / 100;
+    green = ((uint32_t) green * percent) / 100;
+    blue = ((uint32_t) blue * percent) / 100;
+
+    color = (red << 16) | (green << 8) | blue;
+
+    return color;
+}
+
+uint32_t ws2812_brightness_factor_color(uint32_t color, uint8_t factor) {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+
+    red = (color >> 16) & 0xff;
+    green = (color >> 8) & 0xff;
+    blue = color & 0xff;
+
+    red = ((uint32_t) red * factor) / 255;
+    green = ((uint32_t) green * factor) / 255;
+    blue = ((uint32_t) blue * factor) / 255;
+
+    color = (red << 16) | (green << 8) | blue;
+
+    return color;
+}
+
+bool ws2812_dimm_pixel_by_percent(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t percent) {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+    uint32_t dRed;
+    uint32_t dGreen;
+    uint32_t dBlue;
+    uint8_t res;
+
+    res = ws2812_get_pixel_rgb(self, lane, pixel, &red, &green, &blue);
+    if (res != true) {
+        return res;
+    }
+
+    dRed = ((uint32_t) red * (100 - percent)) / 100;
+    dGreen = ((uint32_t) green * (100 - percent)) / 100;
+    dBlue = ((uint32_t) blue * (100 - percent)) / 100;
+
+    return ws2812_set_pixel_rgb(self, lane, pixel, (uint8_t) dRed, (uint8_t) dGreen, (uint8_t) dBlue);
+}
+
+bool ws2812_dimm_all_pixels_in_lane_by_percent(ws2812_pio_t *self, uint8_t lane, uint8_t percent) {
+    uint16_t pixel;
+    bool res;
+
+    for (pixel = 0; pixel < self->pixels; ++pixel) {
+        res = ws2812_dimm_pixel_by_percent(self, lane, pixel, percent);
+        if (res != true) {
+            return res;
+        }
+    }
+
+    return res;
+}
+
+
+bool ws2812_dimm_pixel_by_factor(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t factor) {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+    uint32_t dRed;
+    uint32_t dGreen;
+    uint32_t dBlue;
+    uint8_t res;
+
+    res = ws2812_get_pixel_rgb(self, lane, pixel, &red, &green, &blue);
+    if (res != true) {
+        return res;
+    }
+
+    dRed = ((uint32_t) red * (255 - factor)) / 255;
+    dGreen = ((uint32_t) green * (255 - factor)) / 255;
+    dBlue = ((uint32_t) blue * (255 - factor)) / 255;
+
+    return ws2812_set_pixel_rgb(self, lane, pixel, (uint8_t) dRed, (uint8_t) dGreen, (uint8_t) dBlue);
+}
+
+bool ws2812_dimm_all_pixels_in_lane_by_factor(ws2812_pio_t *self, uint8_t lane, uint8_t factor) {
+    uint16_t pixel;
+    bool res;
+
+    for (pixel = 0; pixel < self->pixels; ++pixel) {
+        res = ws2812_dimm_pixel_by_factor(self, lane, pixel, factor);
+        if (res != true) {
+            return res;
+        }
+    }
+
+    return res;
 }
 
 

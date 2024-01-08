@@ -118,12 +118,36 @@ void _ws2812_dma_memcpy_buffer(ws2812_pio_t *self, uint32_t *dst, uint32_t *src,
 
 bool ws2812_clear_pixel(ws2812_pio_t *self, uint8_t lane, uint16_t pixel);
 bool ws2812_clear_all_pixel(ws2812_pio_t *self);
+bool ws2812_clear_all_pixel_in_lane(ws2812_pio_t *self, uint8_t lane);
 bool ws2812_set_all_pixel_color(ws2812_pio_t *self, uint32_t color);
 bool ws2812_set_pixel_color(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint32_t color);
 bool ws2812_get_pixel_color(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint32_t *color);
 
 bool ws2812_set_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t red, uint8_t green, uint8_t blue);
 bool ws2812_get_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t *redP, uint8_t *greenP, uint8_t *blueP);
+
+
+/*!
+ * \brief Transform a color into a new one based on a brightness percent value
+ * \param color Color to transform (rgb or wrgb)
+ * \param percent Percentage to apply, from 0 to 100
+ * \return The new color value
+ */
+uint32_t ws2812_brightness_percent_color(uint32_t color, uint8_t percent);
+
+/*!
+ * \brief Transform a color into a new one based on a brightness value from 0 to 0xff
+ * \param color Color to transform (rgb or wrgb)
+ * \param percent Factor to apply, from 0 to 0xff
+ * \return The new color value
+ */
+uint32_t ws2812_brightness_factor_color(uint32_t color, uint8_t factor);
+
+bool ws2812_dimm_pixel_by_percent(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t percent);
+bool ws2812_dimm_all_pixels_in_lane_by_percent(ws2812_pio_t *self, uint8_t lane, uint8_t percent);
+bool ws2812_dimm_pixel_by_factor(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t factor);
+bool ws2812_dimm_all_pixels_in_lane_by_factor(ws2812_pio_t *self, uint8_t lane, uint8_t factor);
+
 
 #ifdef __cplusplus
 }
