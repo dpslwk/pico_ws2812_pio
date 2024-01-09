@@ -60,7 +60,7 @@ static int64_t _ws2812_reset_delay_complete(alarm_id_t id, void *user_data) {
 
 void _ws2812_dma_complete_handler(void) {
     if (dma_channel_get_irq0_status(ws2812_state.dma)) {
-        dma_channel_acknowledge_irq0(0);
+        dma_channel_acknowledge_irq0(ws2812_state.dma);
 
         if (ws2812_state.reset_delay_alarm_id != 0) { /* safety check: is there somehow an alarm already running? */
             cancel_alarm(ws2812_state.reset_delay_alarm_id); /* cancel it */
@@ -575,11 +575,15 @@ bool ws2812_dimm_all_pixels_in_lane_by_factor(ws2812_pio_t *self, uint8_t lane, 
 static void _ws2812_transfer_task(void *params) {
     ws2812_pio_t *self = params;
     TickType_t xLastWakeTime;
+    TickType_t xLastWatchdog;
     const TickType_t xFrequency = pdMS_TO_TICKS(self->refresh_rate);
 
     xLastWakeTime = xTaskGetTickCount();
     while (true) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        if (xLastWakeTime - xLastWatchdog > pdMS_TO_TICKS(1000)) {
+            xLastWatchdog = xLastWakeTime;
+        }
         ws2812_transfer(self);
     }
 }
