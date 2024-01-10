@@ -569,7 +569,6 @@ bool ws2812_dimm_all_pixels_in_lane_by_factor(ws2812_pio_t *self, uint8_t lane, 
     return res;
 }
 
-
 #ifdef LIB_FREERTOS_KERNEL
 
 static void _ws2812_transfer_task(void *params) {
@@ -606,7 +605,7 @@ bool ws2812_pio_init_freertos(
 
     self->refresh_rate = refresh_rate;
 
-    xTaskCreate(_ws2812_transfer_task, "WS2812TransferTask", WS2821_TRANSFER_TASK_STACK_SIZE, self, task_priority, &self->_trasnfer_task_handle);
+    xTaskCreate(_ws2812_transfer_task, "WS2812Thread", WS2821_TRANSFER_TASK_STACK_SIZE, self, task_priority, &self->_trasnfer_task_handle);
 }
 
 #endif // LIB_FREERTOS_KERNEL
