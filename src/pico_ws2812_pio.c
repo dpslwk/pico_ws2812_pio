@@ -582,6 +582,9 @@ static void _ws2812_transfer_task(void *params) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
         if (xLastWakeTime - xLastWatchdog > pdMS_TO_TICKS(1000)) {
             xLastWatchdog = xLastWakeTime;
+            #ifndef NDEBUG
+            printf("Watchdog: WS2812\n");
+            #endif
         }
         ws2812_transfer(self);
     }
