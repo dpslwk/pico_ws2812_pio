@@ -462,6 +462,50 @@ bool ws2812_get_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint
     return true;
 }
 
+uint32_t ws2812_fade_percent_towards_color(uint32_t color, uint32_t end_color, uint8_t percent) {
+    uint8_t red, end_red;
+    uint8_t green, end_green;
+    uint8_t blue, end_blue;
+
+    red = (color >> 16) & 0xff;
+    green = (color >> 8) & 0xff;
+    blue = color & 0xff;
+
+    end_red = (end_color >> 16) & 0xFF;
+    end_green = (end_color >> 8) & 0xFF;
+    end_blue = end_color & 0xFF;
+
+    red = red + (((int32_t)end_red - red) * percent) / 100;
+    green = green + (((int32_t)end_green - green) * percent) / 100;
+    blue = blue + (((int32_t)end_blue - blue) * percent) / 100;
+
+    color = (red << 16) | (green << 8) | blue;
+
+    return color;
+}
+
+uint32_t ws2812_fade_factor_towards_color(uint32_t color, uint32_t end_color, uint8_t factor) {
+    uint8_t red, end_red;
+    uint8_t green, end_green;
+    uint8_t blue, end_blue;
+
+    red = (color >> 16) & 0xff;
+    green = (color >> 8) & 0xff;
+    blue = color & 0xff;
+
+    end_red = (end_color >> 16) & 0xFF;
+    end_green = (end_color >> 8) & 0xFF;
+    end_blue = end_color & 0xFF;
+
+    red = red + (((int32_t)end_red - red) * facor) / 255;
+    green = green + (((int32_t)end_green - green) * facor) / 255;
+    blue = blue + (((int32_t)end_blue - blue) * facor) / 255;
+
+    color = (red << 16) | (green << 8) | blue;
+
+    return color;
+}
+
 uint32_t ws2812_brightness_percent_color(uint32_t color, uint8_t percent) {
     uint8_t red;
     uint8_t green;

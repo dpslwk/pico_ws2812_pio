@@ -126,6 +126,8 @@ bool ws2812_get_pixel_color(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, ui
 bool ws2812_set_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t red, uint8_t green, uint8_t blue);
 bool ws2812_get_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t *redP, uint8_t *greenP, uint8_t *blueP);
 
+uint32_t ws2812_fade_percent_towards_color(uint32_t color, uint32_t end_color, uint8_t percent);
+uint32_t ws2812_fade_factor_towards_color(uint32_t color, uint32_t end_color, uint8_t factor);
 
 /*!
  * \brief Transform a color into a new one based on a brightness percent value
