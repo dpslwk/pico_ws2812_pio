@@ -497,9 +497,9 @@ uint32_t ws2812_fade_factor_towards_color(uint32_t color, uint32_t end_color, ui
     end_green = (end_color >> 8) & 0xFF;
     end_blue = end_color & 0xFF;
 
-    red = red + (((int32_t)end_red - red) * facor) / 255;
-    green = green + (((int32_t)end_green - green) * facor) / 255;
-    blue = blue + (((int32_t)end_blue - blue) * facor) / 255;
+    red = red + (((int32_t)end_red - red) * factor) / 255;
+    green = green + (((int32_t)end_green - green) * factor) / 255;
+    blue = blue + (((int32_t)end_blue - blue) * factor) / 255;
 
     color = (red << 16) | (green << 8) | blue;
 
