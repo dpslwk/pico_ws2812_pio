@@ -150,6 +150,12 @@ bool ws2812_dimm_all_pixels_in_lane_by_percent(ws2812_pio_t *self, uint8_t lane,
 bool ws2812_dimm_pixel_by_factor(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t factor);
 bool ws2812_dimm_all_pixels_in_lane_by_factor(ws2812_pio_t *self, uint8_t lane, uint8_t factor);
 
+uint32_t ws2812_transition_color(uint32_t color, uint32_t end_color, uint8_t step, uint8_t max_step);
+uint32_t ws2812_squared_color_distance(uint32_t color1, uint32_t color2);
+int ws2812_is_color_near_target(uint32_t color, uint32_t target_color, uint32_t squared_threshold);
+void ws2812_hex_string_to_rgb(const char *hex_string, uint8_t *r, uint8_t *g, uint8_t *b);
+uint32_t ws2812_hex_string_to_color(const char *hex_string);
+uint32_t ws2812_wheel(uint8_t position);
 
 #ifdef __cplusplus
 }

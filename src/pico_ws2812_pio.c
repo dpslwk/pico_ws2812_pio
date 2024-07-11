@@ -577,7 +577,6 @@ bool ws2812_dimm_all_pixels_in_lane_by_percent(ws2812_pio_t *self, uint8_t lane,
     return res;
 }
 
-
 bool ws2812_dimm_pixel_by_factor(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint8_t factor) {
     uint8_t red;
     uint8_t green;
@@ -656,3 +655,100 @@ bool ws2812_pio_init_freertos(
 }
 
 #endif // LIB_FREERTOS_KERNEL
+
+uint32_t ws2812_transition_color(uint32_t color, uint32_t end_color, uint8_t step, uint8_t max_step) {
+    // Extract the individual color components
+    uint8_t start_red = (color >> 16) & 0xFF;
+    uint8_t start_green = (color >> 8) & 0xFF;
+    uint8_t start_blue = color & 0xFF;
+
+    uint8_t end_red = (end_color >> 16) & 0xFF;
+    uint8_t end_green = (end_color >> 8) & 0xFF;
+    uint8_t end_blue = end_color & 0xFF;
+
+    // Calculate the increment for each color component
+    int16_t red_increment = ((int16_t)(end_red - start_red) * step) / max_step;
+    int16_t green_increment = ((int16_t)(end_green - start_green) * step) / max_step;
+    int16_t blue_increment = ((int16_t)(end_blue - start_blue) * step) / max_step;
+
+    // Calculate the new color components
+    uint8_t new_red = start_red + red_increment;
+    uint8_t new_green = start_green + green_increment;
+    uint8_t new_blue = start_blue + blue_increment;
+
+    // Combine the new color components into a new color value
+    uint32_t new_color = (new_red << 16) | (new_green << 8) | new_blue;
+
+    return new_color;
+}
+
+// Function to calculate the squared Euclidean distance between two RGB colors represented as uint32_t values
+uint32_t ws2812_squared_color_distance(uint32_t color1, uint32_t color2) {
+    // Extract RGB components from the color values
+    uint8_t r1 = (color1 >> 16) & 0xff;
+    uint8_t g1 = (color1 >> 8) & 0xff;
+    uint8_t b1 = color1 & 0xff;
+
+    uint8_t r2 = (color2 >> 16) & 0xff;
+    uint8_t g2 = (color2 >> 8) & 0xff;
+    uint8_t b2 = color2 & 0xff;
+
+    // Calculate the differences in RGB components
+    int32_t delta_r = r2 - r1;
+    int32_t delta_g = g2 - g1;
+    int32_t delta_b = b2 - b1;
+
+    // Calculate the squared differences and sum them up
+    uint32_t squared_distance = delta_r * delta_r + delta_g * delta_g + delta_b * delta_b;
+
+    return squared_distance;
+}
+
+// Function to check if a given RGB color is near a target RGB color
+int ws2812_is_color_near_target(uint32_t color, uint32_t target_color, uint32_t squared_threshold) {
+    // Calculate the squared Euclidean distance between the two colors
+    uint32_t squared_distance = squared_color_distance(color, target_color);
+
+    // Check if the squared distance is within the squared threshold
+    return (squared_distance <= squared_threshold);
+}
+
+void ws2812_hex_string_to_rgb(const char *hex_string, uint8_t *r, uint8_t *g, uint8_t *b) {
+    // Ensure hex_string is not NULL and has exactly 6 characters
+    if (hex_string == NULL || strlen(hex_string) != 6) {
+        // printf("Invalid hexadecimal string.\n");
+
+        return;
+    }
+
+    // Convert hexadecimal string to RGB values
+    *r = strtol(hex_string, NULL, 16) >> 16 & 0xFF;
+    *g = strtol(hex_string, NULL, 16) >> 8 & 0xFF;
+    *b = strtol(hex_string, NULL, 16) & 0xFF;
+}
+
+uint32_t ws2812_hex_string_to_color(const char *hex_string) {
+    uint8_t r, g, b;
+    hex_string_to_rgb(hex_string, &r, &g, &b);
+
+    return WS2812_COMBINE_RGB(r, g, b);
+}
+
+uint32_t ws2812_wheel(uint8_t position) {
+    if (position < 0 || position > 255) {
+        return WS2812_COMBINE_RGB(0, 0, 0);
+    }
+
+    if (position < 85) {
+        return WS2812_COMBINE_RGB(255 - position * 3, position * 3, 0);
+    }
+
+    if (position < 170) {
+        position -= 85;
+        return WS2812_COMBINE_RGB(0, 255 - position * 3, position * 3);
+    }
+
+    position -= 170;
+
+    return WS2812_COMBINE_RGB(position * 3, 0, 255 - position * 3);
+}
