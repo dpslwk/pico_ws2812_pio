@@ -707,7 +707,7 @@ uint32_t ws2812_squared_color_distance(uint32_t color1, uint32_t color2) {
 // Function to check if a given RGB color is near a target RGB color
 int ws2812_is_color_near_target(uint32_t color, uint32_t target_color, uint32_t squared_threshold) {
     // Calculate the squared Euclidean distance between the two colors
-    uint32_t squared_distance = squared_color_distance(color, target_color);
+    uint32_t squared_distance = ws2812_squared_color_distance(color, target_color);
 
     // Check if the squared distance is within the squared threshold
     return (squared_distance <= squared_threshold);
@@ -729,7 +729,7 @@ void ws2812_hex_string_to_rgb(const char *hex_string, uint8_t *r, uint8_t *g, ui
 
 uint32_t ws2812_hex_string_to_color(const char *hex_string) {
     uint8_t r, g, b;
-    hex_string_to_rgb(hex_string, &r, &g, &b);
+    ws2812_hex_string_to_rgb(hex_string, &r, &g, &b);
 
     return WS2812_COMBINE_RGB(r, g, b);
 }
