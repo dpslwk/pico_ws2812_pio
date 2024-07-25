@@ -327,31 +327,31 @@ bool ws2812_set_pixel_rgb(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint
         /*
          * 4 lanes GRB
          *                        l3l2l1l0 l3l2l1l0
-         * buffer[0]: 4x 8bit:    g7g7g7g7 g6g6g6g6 | g5g5g5g5 g4g4g4g4 | g3g3g3g3 g2g2g2g2 | g1g1g1g1 g0g0g0g0
-         * buffer[1]: 4x 8bit:    r7r7r7r7 r6r6r6r6 | r5r5r5r5 r4r4r4r4 | r3r3r3r3 r2r2r2r2 | r1r1r1r1 r0r0r0r0
-         * buffer[2]: 4x 8bit:    b7b7b7b7 b6b6b6b6 | b5b5b5b5 b4b4b4b4 | b3b3b3b3 b2b2b2b2 | b1b1b1b1 b0b0b0b0
+         * buffer[0]: 4x 8bit:    g6g6g6g6 g7g7g7g7 | g4g4g4g4 g5g5g5g5 | g2g2g2g2 g3g3g3g3 | g0g0g0g0 g1g1g1g1
+         * buffer[1]: 4x 8bit:    r6r6r6r6 r7r7r7r7 | r4r4r4r4 r5r5r5r5 | r2r2r2r2 r3r3r3r3 | r0r0r0r0 r1r1r1r1
+         * buffer[2]: 4x 8bit:    b6b6b6b6 b7b7b7b7 | b4b4b4b4 b5b5b5b5 | b2b2b2b2 b3b3b3b3 | b0b0b0b0 b1b1b1b1
          */
         bool even_bit;
         for (i = 0; i < 8; ++i) {
             even_bit = (i % 2) == 1;
             if (green & 0x80) {
-                *p |= (1 << (lane + (even_bit ? 0: 4)));
+                *p |= (1 << (lane + (even_bit ? 4: 0)));
             } else {
-                *p &= ~(1 << (lane + (even_bit ? 0: 4)));
+                *p &= ~(1 << (lane + (even_bit ? 4: 0)));
             }
             green <<= 1;
 
             if (red & 0x80) {
-                *(p + 4) |= (1 << (lane + (even_bit ? 0: 4)));
+                *(p + 4) |= (1 << (lane + (even_bit ? 4: 0)));
             } else {
-                *(p + 4) &= ~(1 << (lane + (even_bit ? 0: 4)));
+                *(p + 4) &= ~(1 << (lane + (even_bit ? 4: 0)));
             }
             red <<= 1;
 
             if (blue & 0x80) {
-                *(p + 8) |= (1 << (lane + (even_bit ? 0: 4)));
+                *(p + 8) |= (1 << (lane + (even_bit ? 4: 0)));
             } else {
-                *(p + 8) &= ~(1 << (lane + (even_bit ? 0: 4)));
+                *(p + 8) &= ~(1 << (lane + (even_bit ? 4: 0)));
             }
             blue <<= 1;
 
