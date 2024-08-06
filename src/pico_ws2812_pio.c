@@ -240,19 +240,33 @@ bool ws2812_clear_all_pixel_in_lane(ws2812_pio_t *self, uint8_t lane) {
             return res;
         }
     }
+
+    return true;
 }
 
-bool ws2812_set_all_pixel_color(ws2812_pio_t *self, uint32_t color) {
-    uint8_t lane;
+bool ws2812_set_all_pixel_in_lane_color(ws2812_pio_t *self, uint8_t lane, uint32_t color)
+{
     uint16_t pixel;
     bool res;
 
     for (pixel = 0; pixel < self->pixels; ++pixel) {
-        for (lane = 0; lane < self->lanes; ++lane) {
-            res = ws2812_set_pixel_color(self, lane, pixel, color);
-            if (res != true) {
-                return res;
-            }
+        res = ws2812_set_pixel_color(self, lane, pixel, color);
+        if (res != true) {
+            return res;
+        }
+    }
+
+    return true;
+}
+
+bool ws2812_set_all_pixel_color(ws2812_pio_t *self, uint32_t color) {
+    uint8_t lane;
+    bool res;
+
+    for (lane = 0; lane < self->lanes; ++lane) {
+        res = ws2812_set_all_pixel_in_lane_color(self, lane, color);
+        if (res != true) {
+            return res;
         }
     }
 

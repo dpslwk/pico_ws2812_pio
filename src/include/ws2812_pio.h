@@ -119,6 +119,7 @@ void _ws2812_dma_memcpy_buffer(ws2812_pio_t *self, uint32_t *dst, uint32_t *src,
 bool ws2812_clear_pixel(ws2812_pio_t *self, uint8_t lane, uint16_t pixel);
 bool ws2812_clear_all_pixel(ws2812_pio_t *self);
 bool ws2812_clear_all_pixel_in_lane(ws2812_pio_t *self, uint8_t lane);
+bool ws2812_set_all_pixel_in_lane_color(ws2812_pio_t *self, uint8_t lane, uint32_t color);
 bool ws2812_set_all_pixel_color(ws2812_pio_t *self, uint32_t color);
 bool ws2812_set_pixel_color(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint32_t color);
 bool ws2812_get_pixel_color(ws2812_pio_t *self, uint8_t lane, uint16_t pixel, uint32_t *color);
