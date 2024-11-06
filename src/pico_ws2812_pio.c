@@ -35,22 +35,6 @@ static size_t _ws2812_buffer_per_pixel[WS2812_MAX_LANES + 1] = {
     6, 6, 6, 6, // 5>8 lanes
 };
 
-
-void hexdump(const void *mem, size_t len, uint8_t cols) {
-    // print_lock.acquire();
-    const uint8_t *src = (const uint8_t*) mem;
-    printf("\n[HEXDUMP] Address: 0x%08X len: 0x%zX (%zu)", (ptrdiff_t)src, len, len);
-    for (uint32_t i = 0; i < len; ++i) {
-        if (i % cols == 0) {
-            printf("\n[0x%08X] 0x%08lX: ", (ptrdiff_t)src, i);
-        }
-        printf("%02X ", *src);
-        src++;
-    }
-    printf("\n");
-    // print_lock.release();
-}
-
 static int64_t _ws2812_reset_delay_complete(alarm_id_t id, void *user_data) {
     ws2812_pio_t *self = user_data;
     self->reset_delay_alarm_id = 0; /* reset alarm id */
